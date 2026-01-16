@@ -6,10 +6,12 @@ import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './common/redis/redis.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
 import { ProductsModule } from './products/products.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
     AuthModule,
+    HealthModule,
     OnboardingModule,
     ProductsModule,
     RedisModule,
