@@ -131,6 +131,36 @@ Una vez finalizado el proceso, el backend quedará disponible en:
 http://localhost:3000
 ```
 
+## 🔐 Autenticación – Endpoint /auth/login
+
+El endpoint **POST** `/auth/login` utiliza **credenciales ficticias**, definidas así por los requerimientos del reto técnico.
+
+### Credenciales requeridas (obligatorias)
+
+Para obtener un token JWT **debe enviarse exactamente** el siguiente body:
+
+```json
+{
+  "username": "admin",
+  "password": "admin"
+}
+```
+
+Cualquier combinación diferente devolverá un error de autenticación.
+
+### Comportamiento del servicio
+
+- No existe persistencia de usuarios en base de datos.
+- El usuario admin es hardcodeado en el servicio de autenticación.
+- Si las credenciales son válidas, el servicio retorna un JWT que debe usarse en los endpoints protegidos.
+- Si las credenciales son inválidas, se retorna un error 401 Unauthorized.
+
+### Nota técnica
+
+Este comportamiento es **intencional** y responde a los requerimientos del reto técnico, el cual solicitaba el uso de un usuario y contraseña ficticios.
+
+> 🔧 **TODO futuro**: implementar búsqueda real de usuarios en base de datos y manejo de credenciales seguras.
+
 ## 📚 Documentación con Apidoc
 
 Esta API cuenta con documentación interactiva generada automáticamente con Apidoc gracias a la integración con `apidoc`.
@@ -186,6 +216,32 @@ Para acceder a pgAdmin y ver la base de datos:
 5. Haz clic en **Save** para guardar la configuración y conectarte.
 
    Una vez creada la conexión, puedes explorar las bases de datos, ver las tablas, ejecutar consultas y gestionar los datos desde la interfaz de pgAdmin.
+
+## 🌱 Seed de Productos
+
+La aplicación cuenta con un **seed automático de productos** que se ejecuta al iniciar el backend.
+
+### **¿Cómo funciona?**
+
+- El seed está implementado dentro del módulo `Products`.
+- Se ejecuta automáticamente durante el ciclo de vida de NestJS (`OnModuleInit`).
+- Al iniciar la aplicación, se valida si la tabla `products` está vacía.
+- Si no existen registros, se insertan **10 productos de ejemplo** automáticamente.
+- Si la tabla ya contiene datos, el seed **no se vuelve a ejecutar**, evitando duplicados.
+
+### **¿Cuándo se ejecuta?**
+
+- Al iniciar la aplicación NestJS.
+- Durante el `docker-compose up`.
+
+### **¿Para qué sirve?**
+
+- Facilita el desarrollo y las pruebas.
+- Garantiza que la API tenga datos disponibles desde el primer arranque.
+- Evita la carga manual inicial de información.
+
+> ⚠️ El seed está pensado para entornos de desarrollo y pruebas.  
+> En producción se recomienda deshabilitarlo o controlarlo mediante variables de entorno.
 
 ## 👨‍💻 Autor
 
