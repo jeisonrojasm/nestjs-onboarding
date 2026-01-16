@@ -1,26 +1,27 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Onboarding } from './entities/onboarding.entity';
+import { Repository } from 'typeorm';
 import { CreateOnboardingDto } from './dto/create-onboarding.dto';
-import { UpdateOnboardingDto } from './dto/update-onboarding.dto';
 
 @Injectable()
 export class OnboardingService {
-  create(createOnboardingDto: CreateOnboardingDto) {
-    return 'This action adds a new onboarding';
-  }
+  constructor(
+    @InjectRepository(Onboarding)
+    private readonly onboardingRepository: Repository<Onboarding>,
+  ) { }
 
-  findAll() {
-    return `This action returns all onboarding`;
-  }
+  async create(createOnboardingDto: CreateOnboardingDto) {
+    const onboarding = this.onboardingRepository.create({
+      ...createOnboardingDto,
+      status: 'REQUESTED',
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} onboarding`;
-  }
+    const saved = await this.onboardingRepository.save(onboarding);
 
-  update(id: number, updateOnboardingDto: UpdateOnboardingDto) {
-    return `This action updates a #${id} onboarding`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} onboarding`;
+    return {
+      onboardingId: saved.id,
+      status: saved.status,
+    };
   }
 }
