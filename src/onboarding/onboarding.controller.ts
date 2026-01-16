@@ -1,34 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { OnboardingService } from './onboarding.service';
+import { AuthGuard } from '@nestjs/passport';
 import { CreateOnboardingDto } from './dto/create-onboarding.dto';
-import { UpdateOnboardingDto } from './dto/update-onboarding.dto';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Onboarding')
+@ApiBearerAuth('JWT-auth')
 @Controller('onboarding')
+@UseGuards(AuthGuard('jwt'))
 export class OnboardingController {
-  constructor(private readonly onboardingService: OnboardingService) {}
+  constructor(private readonly onboardingService: OnboardingService) { }
 
   @Post()
-  create(@Body() createOnboardingDto: CreateOnboardingDto) {
+  @ApiOperation({ summary: 'Crear onboarding de cliente' })
+  @ApiResponse({ status: 201, description: 'Onboarding creado' })
+  async create(@Body() createOnboardingDto: CreateOnboardingDto) {
     return this.onboardingService.create(createOnboardingDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.onboardingService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.onboardingService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOnboardingDto: UpdateOnboardingDto) {
-    return this.onboardingService.update(+id, updateOnboardingDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.onboardingService.remove(+id);
   }
 }

@@ -1,26 +1,52 @@
-import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Product } from './entities/product.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { RedisService } from 'src/common/redis/redis.service';
 
 @Injectable()
 export class ProductsService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  private readonly CACHE_TTL = 60;
+
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+    private readonly redisService: RedisService,
+  ) { }
+
+  async findAll(): Promise<Product[]> {
+    const cacheKey = 'products:all';
+
+    const cached = await this.redisService.get<Product[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const products = await this.productRepository.find();
+
+    await this.redisService.set(cacheKey, products, this.CACHE_TTL);
+
+    return products;
   }
 
-  findAll() {
-    return `This action returns all products`;
-  }
+  async findOne(id: number): Promise<Product> {
+    const cacheKey = `products:${id}`;
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
-  }
+    const cached = await this.redisService.get<Product>(cacheKey);
+    if (cached) {
+      return cached;
+    }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
+    const product = await this.productRepository.findOne({
+      where: { id },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+    if (!product) {
+      throw new NotFoundException(`Product with id ${id} not found`);
+    }
+
+    await this.redisService.set(cacheKey, product, this.CACHE_TTL);
+
+    return product;
   }
 }
