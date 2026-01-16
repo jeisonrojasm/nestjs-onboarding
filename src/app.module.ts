@@ -2,13 +2,17 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Onboarding } from './onboarding/entities/onboarding.entity';
-import { Product } from './products/entities/product.entity';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
+import { RedisModule } from './common/redis/redis.module';
+import { OnboardingModule } from './onboarding/onboarding.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
+    AuthModule,
+    OnboardingModule,
+    ProductsModule,
+    RedisModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
@@ -16,17 +20,9 @@ import { ConfigModule } from '@nestjs/config';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [
-        Onboarding,
-        Product,
-      ],
+      autoLoadEntities: true, // solo en dev
       synchronize: true, // solo en dev
     }),
-    TypeOrmModule.forFeature([
-      Onboarding,
-      Product,
-    ]),
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
