@@ -150,7 +150,6 @@ Cualquier combinación diferente devolverá un error de autenticación.
 
 ### Comportamiento del servicio
 
-- No existe persistencia de usuarios en base de datos.
 - El usuario admin es hardcodeado en el servicio de autenticación.
 - Si las credenciales son válidas, el servicio retorna un JWT que debe usarse en los endpoints protegidos.
 - Si las credenciales son inválidas, se retorna un error 401 Unauthorized.
@@ -207,10 +206,10 @@ Para acceder a pgAdmin y ver la base de datos:
    - **Name**: Ingresa un nombre descriptivo, por ejemplo: `nestjs-onboarding`.
 
    🔌 **Pestaña Connection**
-   - **Host name/address**: Definido en la variable `DATABASE_HOST` del archivo `.env`
-   - **Port**: Definido en la variable `DATABASE_PORT` del archivo `.env`
-   - **Username**: Definido en la variable `DATABASE_USER` del archivo `.env`
-   - **Password**: Definido en la variable `DATABASE_PASSWORD` del archivo `.env`
+   - **Host name/address**: Definido en la variable `POSTGRES_HOST` del archivo `.env`
+   - **Port**: Definido en la variable `POSTGRES_PORT` del archivo `.env`
+   - **Username**: Definido en la variable `POSTGRES_USER` del archivo `.env`
+   - **Password**: Definido en la variable `POSTGRES_PASSWORD` del archivo `.env`
    - Opcional: Marca la casilla *Save password* para no tener que ingresarla cada vez.
   
 5. Haz clic en **Save** para guardar la configuración y conectarte.
