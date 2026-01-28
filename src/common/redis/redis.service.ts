@@ -31,6 +31,10 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
+  async setWithoutLimit(key: string, value: any) {
+    await this.client.set(key, JSON.stringify(value));
+  }
+
   async del(key: string) {
     await this.client.del(key);
   }
