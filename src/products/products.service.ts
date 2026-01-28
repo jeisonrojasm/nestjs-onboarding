@@ -15,7 +15,16 @@ export class ProductsService {
   ) { }
 
   async findAll(): Promise<Product[]> {
+    const timesKey = 'times'
     const cacheKey = 'products:all';
+
+    let timesCache = await this.redisService.get<number>(timesKey);
+
+    if (!timesCache) timesCache = 1
+    else timesCache++
+
+    await this.redisService.set(timesKey, timesCache, 36000);
+    console.log('timesCache:', timesCache)
 
     const cached = await this.redisService.get<Product[]>(cacheKey);
     if (cached) {
